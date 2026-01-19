@@ -44,7 +44,7 @@ A typical command sequence is:
 
 Note that every transaction starts with the master asserting RESET.
 
-### API documentation
+# API documentation
 
 ----
 `onewire_t onewire_init(uint pio_num, uint gpio)`
