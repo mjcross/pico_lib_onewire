@@ -1,5 +1,5 @@
 # OneWire library for the RPi Pico and Pico 2 'C' SDK
-A version of my OneWire driver from the RPi Pico examples repository packaged for easy inclusion as a CMake subdirectory.
+A version of my OneWire driver from the RPi Pico examples repository, packaged for easy inclusion in a CMake project.
 
 For a simple demonstration of how to use this libary see [pico_ds18b20_example](https://github.com/mjcross/pico_ds18b20_example).
 
@@ -46,7 +46,6 @@ Note that every transaction starts with the master asserting RESET.
 
 # API documentation
 
-----
 `onewire_t onewire_init(uint pio_num, uint gpio)`
 
 Initialise the library and return an instance handle (must be called before other functions)
