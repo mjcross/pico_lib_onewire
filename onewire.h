@@ -19,8 +19,8 @@ typedef struct onewire_instance_t *onewire_t;
 
 // Public API
 onewire_t onewire_init(uint pio_num, uint gpio);
-void onewire_send(onewire_t ow, uint8_t data);
-uint onewire_read(onewire_t ow);
-bool onewire_reset(onewire_t ow);
-bool onewire_check_crc(onewire_id_t id);
-int onewire_bus_scan (onewire_t ow, onewire_id_t *id_list, int maxdevs, uint8_t search_command);
+void onewire_send(const onewire_t ow, const uint8_t data);
+uint onewire_read(const onewire_t ow);
+bool onewire_reset(const onewire_t ow);
+bool onewire_check_crc(const onewire_id_t *id_ptr);
+int onewire_bus_scan (const onewire_t ow, onewire_id_t *id_list, int maxdevs, uint8_t search_command);

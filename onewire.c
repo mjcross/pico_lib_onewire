@@ -52,19 +52,19 @@ onewire_t onewire_init(uint pio_num, uint gpio) {
 
 // read 8 bits from the bus
 // returns: the value read (lsb first)
-uint onewire_read(onewire_t ow) {
+uint onewire_read(const onewire_t ow) {
     pio_sm_put_blocking(ow->pio, ow->sm, 0b11111111);               // generate 8 read slots
     return (uint8_t)(pio_sm_get_blocking (ow->pio, ow->sm) >> 24);  // read response and shift into bits 0..7
 }
 
 // write 8 bits to the bus (lsb first)
-void onewire_send (onewire_t ow, uint8_t data) {
+void onewire_send (const onewire_t ow, uint8_t data) {
     pio_sm_put_blocking (ow->pio, ow->sm, (uint32_t)data);
     pio_sm_get_blocking (ow->pio, ow->sm);                          // discard the response
 }
 
 // assert a reset condition on the bus and see if any device(s) respond
-bool onewire_reset (onewire_t ow) {
+bool onewire_reset (const onewire_t ow) {
     pio_sm_exec_wait_blocking (ow->pio, ow->sm, ow->jmp_reset);
     if ((pio_sm_get_blocking (ow->pio, ow->sm) & 1) == 0) {         // listen for any device pulling the bus low
         return true;
@@ -74,16 +74,15 @@ bool onewire_reset (onewire_t ow) {
 
 // check the CRC of a onewire id
 // returns: true if the CRC matched
-bool onewire_check_crc(onewire_id_t id) {
+bool onewire_check_crc (const onewire_id_t *id_ptr) {
     uint8_t crc = 0;
-    const uint8_t id_crc = id.crc;
+    const uint8_t id_crc = id_ptr->crc;
     for(int i = 0; i < 56; i+= 1) {
-        if ((id.raw & 0x01) ^ (crc & 0x01)) {
+        if ((id_ptr->raw >> i & 0x01) ^ (crc & 0x01)) {
             crc = (crc >> 1) ^ 0x8c;                                // CRC polynomial x^8 + x^5 + x^4 + 1
         } else {
             crc >>= 1;
         }
-        id.raw >>= 1;
     }
     return (id_crc == crc);
 }
@@ -94,7 +93,7 @@ bool onewire_check_crc(onewire_id_t id) {
 // ow: pointer to an instance of the library
 // device_id_list: location at which store the addresses (NULL means don't store)
 // maxdevs: maximum number of devices to find (0 means no limit)
-int onewire_bus_scan (onewire_t ow, onewire_id_t *device_id_list, int maxdevs, uint8_t search_command) {
+int onewire_bus_scan (const onewire_t ow, onewire_id_t *device_id_list, int maxdevs, uint8_t search_command) {
     int index;
     onewire_id_t device_id = {.raw = 0ull};
     int branch_point;

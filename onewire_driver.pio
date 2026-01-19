@@ -83,7 +83,7 @@ static inline void onewire_driver_init (PIO pio, uint sm, uint offset, uint pin_
     sm_config_set_clkdiv (&c, div);
 
     // apply the configuration and initialise the program counter
-    pio_sm_init (pio, sm, offset + onewire_offset_fetch_bit, &c);
+    pio_sm_init (pio, sm, offset + onewire_driver_offset_fetch_bit, &c);
 
     // enable the state machine
     pio_sm_set_enabled (pio, sm, true);
@@ -91,6 +91,6 @@ static inline void onewire_driver_init (PIO pio, uint sm, uint offset, uint pin_
 
 static inline uint onewire_driver_reset_instr (uint offset) {
     // encode a "jmp reset_bus side 0" instruction for the state machine
-    return pio_encode_jmp (offset + onewire_offset_reset_bus) | pio_encode_sideset (1, 0);
+    return pio_encode_jmp (offset + onewire_driver_offset_reset_bus) | pio_encode_sideset (1, 0);
 }
 %}
