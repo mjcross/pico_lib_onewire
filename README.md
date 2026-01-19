@@ -61,7 +61,7 @@ Initialise the library and return an instance handle (must be called before othe
 The current version of the driver uses 17 PIO instructions and one state machine. You can install multiple instances of the library but each must use a different GPIO.
 
 ----
-`int onewire_bus_scan (onewire_t ow, onewire_id_t *id_list, int maxdevs, uint8_t search_command)`
+`int onewire_bus_scan (const onewire_t ow, onewire_id_t *id_list, int maxdevs, uint8_t search_command)`
 
 Detect connected devices and their unique 64bit ids (rom codes)
 
@@ -78,9 +78,54 @@ Detect connected devices and their unique 64bit ids (rom codes)
 The search algorithm takes approximately 14ms per connected device. The returned device IDs can be decoded using the `.family`, `.serial` and `.crc` members of the provided `onewire_id_t` type, or accessed as a `.raw` 64bit value; and verfied with `onewire_check_crc()` (see below).
 
 ----
-`bool onewire_check_crc(onewire_id_t id)`
+`bool onewire_check_crc(const onewire_id_t *id_ptr)`
 
-Check the CRC of a device ID.
+Check the CRC of a 64bit device ID (rom code).
 
 **Inputs:**
 - pointer to a device ID
+
+**Outputs:**
+- returns `true` if the CRC in the top 8 bits matches the calculated value, otherwise `false`
+
+The CRC is calculated using the polynomial x^8 + x^5 + x^4 + 1 over the lower 56 bits of the raw value. The same algorithm is typically also applied to 64bit data values read from devices.
+
+----
+`bool onewire_reset(const onewire_t ow)`
+
+Assert a reset condition on the bus and check for a *device present* response.
+
+**Inputs:**
+- library instance
+
+**Outputs:**
+- returns `true` if a *device present* response was detected, otherwise `false`
+
+The *1-wire* protocol requires every new transaction to start with the master asserting a reset condition, except consecutive reads or writes to the same device.
+
+----
+`void onewire_send(const onewire_t ow, const uint8_t data)`
+
+Transmit an 8-bit value on the bus.
+
+**Inputs:**
+- library instance
+- data value
+
+**Outputs:**
+- none
+
+Values are transmitted least significant bit first. Multi-byte values are sent least significant byte first.
+
+----
+`uint onewire_read(const onewire_t ow)`
+
+Read an 8-bit value from the bus.
+
+**Inputs:**
+- library instance
+
+**Outputs:**
+- returns the value read.
+
+Values are read least significant bit first.

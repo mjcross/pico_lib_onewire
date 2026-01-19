@@ -78,7 +78,7 @@ bool onewire_check_crc (const onewire_id_t *id_ptr) {
     uint8_t crc = 0;
     const uint8_t id_crc = id_ptr->crc;
     for(int i = 0; i < 56; i+= 1) {
-        if ((id_ptr->raw >> i & 0x01) ^ (crc & 0x01)) {
+        if (((id_ptr->raw >> i) & 0x01) ^ (crc & 0x01)) {
             crc = (crc >> 1) ^ 0x8c;                                // CRC polynomial x^8 + x^5 + x^4 + 1
         } else {
             crc >>= 1;
